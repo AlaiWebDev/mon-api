@@ -6,7 +6,6 @@ const app = express();
 
 // Connexion à MongoDB
 mongoose.connect('mongodb://localhost:27017/mon-api', {
-  useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => console.log('Connecté à MongoDB'))

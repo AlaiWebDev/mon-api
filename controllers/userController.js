@@ -2,14 +2,22 @@ const userService = require("../services/userService");
 
 exports.getAllUsers = async (req, res) => {
     const users = await userService.getAllUsers();
-    res.json(users);
+    try {
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
 };
 
 exports.getUserById = async (req, res) => {
     const user = await userService.getUserById(req.params.id);
-    if (!user)
-        return res.status(404).json({ message: "Utilisateur introuvable" });
-    res.json(user);
+    try {
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
 };
 
 exports.createUser = async (req, res) => {
@@ -22,16 +30,36 @@ exports.createUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-    const user = await userService.updateUser(req.params.id, req.body);
-    if (!user)
-        return res.status(404).json({ message: "Utilisateur introuvable" });
-    res.json(user);
+    const user = await userService.patchUser(req.params.id, req.body);
+    try {
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
+};
+
+exports.patchUser = async (req, res) => {
+    const user = await userService.patchUser(req.params.id, req.body);
+    try {
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
 };
 
 exports.deleteUser = async (req, res) => {
     console.log("ID reçu :", req.params.id);
     const user = await userService.deleteUser(req.params.id);
-    if (!user)
-        return res.status(404).json({ message: "Utilisateur introuvable" });
-    res.status(204).send();
+    try {
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
+    
 };
