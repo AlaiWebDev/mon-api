@@ -14,7 +14,17 @@ exports.createUser = (data) => {
 };
 
 exports.updateUser = (id, data) => {
+  if ('createdAt' in data) {
+    delete data.createdAt;
+  }
   return User.findByIdAndUpdate(id, data, { new: true });
+};
+
+exports.patchUser = (id, data) => {
+  if ('createdAt' in data) {
+    delete data.createdAt;
+  }
+  return User.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
 };
 
 exports.deleteUser = (id) => {

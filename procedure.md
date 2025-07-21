@@ -29,7 +29,6 @@ const app = express();
 
 // Connexion à MongoDB
 mongoose.connect('mongodb://localhost:27017/mon-api', {
-  useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => console.log('Connecté à MongoDB'))
@@ -58,26 +57,16 @@ const userSchema = new mongoose.Schema({
   nom: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   age: { type: Number },
-  createdAt: { type: Date, default: Date.now }
-});
+  createdAt: {
+    type: Date,
+    immutable: true, // 🔒 jamais modifiable
+    default: () => Date.now()
+  }
+}, 
+  {timestamps: true} // ➜ ajoute automatiquement createdAt et updatedAt}
+);
 
 module.exports = mongoose.model('User', userSchema);
-```
-
-## Définir les routes (Ex : routes/userRoutes.js)
-
-```js
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-
-router.get('/', userController.getAllUsers);
-router.post('/', userController.createUser);
-router.get('/:id', userController.getUserById);
-router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
-
-module.exports = router;
 ```
 
 ## Créer les contrôleurs (Ex : controllers/userController.js)
@@ -111,11 +100,39 @@ exports.updateUser = async (req, res) => {
   res.json(user);
 };
 
+exports.patchUser = async (req, res) => {
+    const user = await userService.patchUser(req.params.id, req.body);
+    try {
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
+};
+
 exports.deleteUser = async (req, res) => {
   const user = await userService.deleteUser(req.params.id);
   if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' });
   res.status(204).send();
 };
+```
+
+## Définir les routes (Ex : routes/userRoutes.js)
+
+```js
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/userController');
+
+router.get('/', userController.getAllUsers);
+router.post('/', userController.createUser);
+router.get('/:id', userController.getUserById);
+router.put('/:id', userController.updateUser);
+router.patch('/:id', userController.patchUser);
+router.delete('/:id', userController.deleteUser);
+
+module.exports = router;
 ```
 
 ## services/userService.js
@@ -141,7 +158,17 @@ exports.createUser = (data) => {
 };
 
 exports.updateUser = (id, data) => {
+  if ('createdAt' in data) {
+    delete data.createdAt;
+  }
   return User.findByIdAndUpdate(id, data, { new: true });
+};
+
+exports.patchUser = (id, data) => {
+  if ('createdAt' in data) {
+    delete data.createdAt;
+  }
+  return User.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
 };
 
 exports.deleteUser = (id) => {
@@ -157,6 +184,9 @@ Avec Postman ou Insomnia, fais des requêtes :
 - GET http://localhost:3000/api/users
 
 - POST http://localhost:3000/api/users
+  
+  Headers :  
+  Content-Type: application/json  
   body de la requête en JSON :
 
   ```json
@@ -170,6 +200,23 @@ Avec Postman ou Insomnia, fais des requêtes :
 - GET http://localhost:3000/api/users/{ID}
 
 - PUT http://localhost:3000/api/users/{ID}
+
+  Headers :  
+  Content-Type: application/json  
+  Body de la requête en JSON :
+
+  ```json
+  {
+    "nom": "Toto Cotugno",
+    "email": "toto2@example.com",
+    "age": 35
+  }
+  ```
+
+- PATCH http://localhost:3000/api/users/{ID}
+
+  Headers :  
+  Content-Type: application/json  
   Body de la requête en JSON :
 
   ```json
