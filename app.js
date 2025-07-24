@@ -26,6 +26,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Erreur serveur' });
 });
 
+// Exploitation du dossier public pour les fichiers statiques (css, images, etc)
+app.use(express.static('public'));
+
+
 // 🆕 Page d'accueil EJS
 app.get('/', async (req, res) => {
   try {

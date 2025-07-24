@@ -15,6 +15,8 @@ exemple-api/
 │   └── userService.js  
 ├── routes/  
 │   └── userRoutes.js  
+├── views/ - **Si partie FrontEnd**  
+│   └── index.js  
 ├── app.js  
 ├── package.json  
 
@@ -22,6 +24,7 @@ exemple-api/
 
 ```js
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
 
@@ -42,6 +45,19 @@ app.use('/api/users', userRoutes);
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Erreur serveur' });
+});
+
+// Si FrontEnd, exploitation du dossier public pour les fichiers statiques (css, images, etc)
+app.use(express.static('public'));
+
+// Page d'accueil EJS
+app.get('/', async (req, res) => {
+  try {
+    const users = await userModel.find(); // ou find() si Mongo
+    res.render('index', { users });
+  } catch (err) {
+    res.status(500).send('Erreur serveur');
+  }
 });
 
 const PORT = process.env.PORT || 3000;
@@ -226,3 +242,45 @@ Avec Postman ou Insomnia, fais des requêtes :
   ```
 
 - DELETE http://localhost:3000/api/users/{ID}
+
+## Intégrer un FrontEnd
+
+Intégrer une partie FrontEnd avec le moteur de template ejs  
+
+```bash
+npm install --save-dev nodemon
+```
+
+Template du fichier index.ejs du dosier /views :  
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des utilisateurs</title>
+  <link rel="stylesheet" href="/assets/css/index.css">
+</head>
+<body>
+  <h1>Liste des utilisateurs</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Âge</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(user => { %>
+        <tr>
+          <td><%= user.nom %></td>
+          <td><%= user.email %></td>
+          <td><%= user.age %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>
+```
