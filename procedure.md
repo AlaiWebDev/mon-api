@@ -7,6 +7,8 @@ npm install mongoose
 ```
 
 exemple-api/  
+├── public/ - **Si partie FrontEnd**  
+│       └── assets/css/index.css  
 ├── controllers/  
 │   └── userController.js  
 ├── models/  
