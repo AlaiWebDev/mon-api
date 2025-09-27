@@ -1,10 +1,9 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const userRoutes = require('./routes/userRoutes');
-const userModel = require('./models/userModel'); // ou le bon chemin
 const app = express();
-
+const indexRouter = require("./routes/indexRoutes");
+const userRoutes = require('./routes/userRoutes');
 // Déclaration du motreur de template et du dossier des views
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -18,7 +17,7 @@ mongoose.connect('mongodb://localhost:27017/mon-api', {
 
 // Middlewares
 app.use(express.json()); // Middleware pour lire le JSON
-app.use('/api/users', userRoutes);
+
 
 // Middleware d'erreur simple (optionnel mais recommandé)
 app.use((err, req, res, next) => {
@@ -29,16 +28,8 @@ app.use((err, req, res, next) => {
 // Exploitation du dossier public pour les fichiers statiques (css, images, etc)
 app.use(express.static('public'));
 
-
-// 🆕 Page d'accueil EJS
-app.get('/', async (req, res) => {
-  try {
-    const users = await userModel.find(); // ou find() si Mongo
-    res.render('index', { users });
-  } catch (err) {
-    res.status(500).send('Erreur serveur');
-  }
-});
+app.use("/", indexRouter);
+app.use("/users", indexRouter);   // pour les vues frontend
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Le serveur tourne sur le port ${PORT}`));

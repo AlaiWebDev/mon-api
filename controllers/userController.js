@@ -8,6 +8,7 @@ exports.getAllUsers = async (req, res) => {
         res.status(500).json({ message: "Erreur serveur", error: err.message });
     }
 };
+exports.modifyUser
 
 exports.getUserById = async (req, res) => {
     const user = await userService.getUserById(req.params.id);
@@ -38,6 +39,19 @@ exports.updateUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Erreur serveur", error: err.message });
     }
+};
+
+// Afficher le formulaire pré-rempli
+exports.renderEditForm = async (req, res) => {
+  try {
+    const user = await userService.getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).send('Utilisateur non trouvé');
+    }
+    res.render('editUser', { user });
+  } catch (err) {
+    res.status(500).send('Erreur serveur');
+  }
 };
 
 exports.patchUser = async (req, res) => {
