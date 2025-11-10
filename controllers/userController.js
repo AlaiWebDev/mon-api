@@ -8,7 +8,6 @@ exports.getAllUsers = async (req, res) => {
         res.status(500).json({ message: "Erreur serveur", error: err.message });
     }
 };
-exports.modifyUser
 
 exports.getUserById = async (req, res) => {
     const user = await userService.getUserById(req.params.id);

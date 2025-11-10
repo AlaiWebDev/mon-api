@@ -9,7 +9,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Connexion à MongoDB
-mongoose.connect('mongodb://localhost:27017/mon-api', {
+mongoose.connect('mongodb://localhost:27017/exemple-api', {
   useUnifiedTopology: true,
 })
 .then(() => console.log('Connecté à MongoDB'))
