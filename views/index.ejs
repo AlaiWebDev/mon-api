@@ -21,6 +21,7 @@
           <td><%= user.nom %></td>
           <td><%= user.email %></td>
           <td><%= user.age %></td>
+          <td><a href="/users/<%= user.id %>/edit"><button>Modifier</button></a></td>
         </tr>
       <% }); %>
     </tbody>

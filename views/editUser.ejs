@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifier l'utilisateur</title>
+</head>
+<body>
+  <h1>Modifier l'utilisateur</h1>
+  <form action="/users/<%= user.id %>" method="POST">
+    <label>Nom :
+      <input type="text" name="nom" value="<%= user.nom %>">
+    </label>
+    <br>
+    <label>Email :
+      <input type="email" name="email" value="<%= user.email %>">
+    </label>
+    <br>
+    <label>Âge :
+      <input type="number" name="age" value="<%= user.age %>">
+    </label>
+    <br>
+    <button type="submit">Enregistrer</button>
+  </form>
+</body>
+</html>

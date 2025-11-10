@@ -33,7 +33,7 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 
 // Connexion à MongoDB
-mongoose.connect('mongodb://localhost:27017/mon-api', {
+mongoose.connect('mongodb://localhost:27017/exemple-api', {
   useUnifiedTopology: true,
 })
 .then(() => console.log('Connecté à MongoDB'))
@@ -74,12 +74,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   nom: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  age: { type: Number },
-  createdAt: {
-    type: Date,
-    immutable: true, // 🔒 jamais modifiable
-    default: () => Date.now()
-  }
+  age: { type: Number }
 }, 
   {timestamps: true} // ➜ ajoute automatiquement createdAt et updatedAt}
 );

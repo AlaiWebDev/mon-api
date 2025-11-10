@@ -40,6 +40,19 @@ exports.updateUser = async (req, res) => {
     }
 };
 
+// Afficher le formulaire pré-rempli
+exports.renderEditForm = async (req, res) => {
+  try {
+    const user = await userService.getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).send('Utilisateur non trouvé');
+    }
+    res.render('editUser', { user });
+  } catch (err) {
+    res.status(500).send('Erreur serveur');
+  }
+};
+
 exports.patchUser = async (req, res) => {
     const user = await userService.patchUser(req.params.id, req.body);
     try {
