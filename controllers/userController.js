@@ -42,7 +42,7 @@ exports.updateUser = async (req, res) => {
         const user = await userService.patchUser(req.params.id, req.body);
         if (!user)
             return res.status(404).json({ message: "Utilisateur introuvable" });
-        res.json(user);
+        return res.json(user);
     } catch (error) {
         res.status(500).json({ message: "Erreur serveur", error: err.message });
     }
