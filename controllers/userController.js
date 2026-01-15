@@ -1,17 +1,25 @@
 const userService = require("../services/userService");
 
 exports.getAllUsers = async (req, res) => {
-    const users = await userService.getAllUsers();
     try {
-        res.json(users);
+        const users = await userService.getAllUsers();
+        if (!users || users.length === 0) {
+            return res.status(404).json({
+                message: "Aucun utilisateur trouvé"
+            });
+        }
+        res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: err.message });
+        res.status(500).json({
+            message: "Erreur serveur",
+            error: error.message
+        });
     }
 };
 
 exports.getUserById = async (req, res) => {
-    const user = await userService.getUserById(req.params.id);
     try {
+        const user = await userService.getUserById(req.params.id);
         if (!user)
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.json(user);
@@ -30,8 +38,8 @@ exports.createUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-    const user = await userService.patchUser(req.params.id, req.body);
     try {
+        const user = await userService.patchUser(req.params.id, req.body);
         if (!user)
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.json(user);
@@ -54,8 +62,8 @@ exports.renderEditForm = async (req, res) => {
 };
 
 exports.patchUser = async (req, res) => {
-    const user = await userService.patchUser(req.params.id, req.body);
     try {
+        const user = await userService.patchUser(req.params.id, req.body);
         if (!user)
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.json(user);
@@ -65,14 +73,12 @@ exports.patchUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
-    console.log("ID reçu :", req.params.id);
-    const user = await userService.deleteUser(req.params.id);
     try {
+        const user = await userService.deleteUser(req.params.id);
         if (!user)
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.status(204).send();
     } catch (error) {
         res.status(500).json({ message: "Erreur serveur", error: err.message });
     }
-    
 };
