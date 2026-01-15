@@ -28,11 +28,15 @@ exemple-api/
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const userRoutes = require('./routes/userRoutes');
 const app = express();
+const indexRouter = require("./routes/indexRoutes");
+const userRoutes = require('./routes/userRoutes');
+// Déclaration du moteur de template et du dossier des views
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // Connexion à MongoDB
-mongoose.connect('mongodb://localhost:27017/exemple-api', {
+mongoose.connect('mongodb://localhost:27017/exemple-api', { //ou mongodb+srv://alainwebdev:<db_password>@essai.mnphttb.mongodb.net/?appName=essai
   useUnifiedTopology: true,
 })
 .then(() => console.log('Connecté à MongoDB'))
@@ -40,7 +44,7 @@ mongoose.connect('mongodb://localhost:27017/exemple-api', {
 
 // Middlewares
 app.use(express.json()); // Middleware pour lire le JSON
-app.use('/api/users', userRoutes);
+
 
 // Middleware d'erreur simple (optionnel mais recommandé)
 app.use((err, req, res, next) => {
@@ -48,18 +52,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Erreur serveur' });
 });
 
-// Si FrontEnd, exploitation du dossier public pour les fichiers statiques (css, images, etc)
+// Exploitation du dossier public pour les fichiers statiques (css, images, etc)
 app.use(express.static('public'));
 
-// Page d'accueil EJS
-app.get('/', async (req, res) => {
-  try {
-    const users = await userModel.find(); // ou find() si Mongo
-    res.render('index', { users });
-  } catch (err) {
-    res.status(500).send('Erreur serveur');
-  }
-});
+// Routes 
+app.use("/", indexRouter);
+app.use("/users", indexRouter);   // pour les vues frontend
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Le serveur tourne sur le port ${PORT}`));
 ```
@@ -169,7 +168,32 @@ exports.deleteUser = async (req, res) => {
 
 ```
 
-## Définir les routes (Ex : routes/userRoutes.js)
+## Définir les routes globales API + Front (Ex : routes/indexRoutes.js)
+
+```js
+const express = require('express');
+const router = express.Router();
+const userRoutes = require('./userRoutes');
+const userService = require('../services/userService');
+const userController = require('../controllers/userController');
+// Page d'accueil EJS
+router.get('/', async (req, res) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.render('index', { users });
+  } catch (err) {
+    res.status(500).send('Erreur serveur');
+  }
+});
+// Formulaire d'édition
+router.get('/:id/edit', userController.renderEditForm);
+
+router.use('/api/users', userRoutes);
+
+module.exports = router;
+```
+
+## Définir les routes pour le modèle  USER (Ex : routes/userRoutes.js)
 
 ```js
 const express = require('express');
@@ -285,7 +309,7 @@ Intégrer une partie FrontEnd avec le moteur de template ejs
 npm install --save-dev nodemon
 ```
 
-Template du fichier index.ejs du dosier /views :  
+Template du fichier index.ejs du dossier /views :  
 
 ```html
 <!DOCTYPE html>
@@ -315,6 +339,59 @@ Template du fichier index.ejs du dosier /views :
       <% }); %>
     </tbody>
   </table>
+</body>
+</html>
+```
+
+Template du fichier index.ejs du dossier /views :
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifier l'utilisateur</title>
+</head>
+<body>
+  <h1>Modifier l'utilisateur</h1>
+  <form id="editForm">
+    <label>Nom :
+      <input type="text" name="nom" value="<%= user.nom %>">
+    </label>
+    <br>
+    <label>Email :
+      <input type="email" name="email" value="<%= user.email %>">
+    </label>
+    <br>
+    <label>Âge :
+      <input type="number" name="age" value="<%= user.age %>">
+    </label>
+    <br>
+    <button type="submit">Enregistrer</button>
+  </form>
+  <script>
+    const form = document.getElementById('editForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        nom: form.nom.value,
+        email: form.email.value,
+        age: form.age.value
+      };
+
+      const response = await fetch('/api/users/<%= user.id %>', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+      window.location.href = '/'; // route qui rend index.ejs
+    }
+    });
+  </script>
 </body>
 </html>
 ```
