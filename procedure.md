@@ -29,7 +29,6 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
-
 const app = express();
 
 // Connexion à MongoDB
@@ -61,7 +60,6 @@ app.get('/', async (req, res) => {
     res.status(500).send('Erreur serveur');
   }
 });
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Le serveur tourne sur le port ${PORT}`));
 ```
@@ -70,7 +68,6 @@ app.listen(PORT, () => console.log(`Le serveur tourne sur le port ${PORT}`));
 
 ```js
 const mongoose = require('mongoose');
-
 const userSchema = new mongoose.Schema({
   nom: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -85,37 +82,72 @@ module.exports = mongoose.model('User', userSchema);
 ## Créer les contrôleurs (Ex : controllers/userController.js)
 
 ```js
-const userService = require('../services/userService');
+const userService = require("../services/userService");
 
 exports.getAllUsers = async (req, res) => {
-  const users = await userService.getAllUsers();
-  res.json(users);
+    try {
+        const users = await userService.getAllUsers();
+        if (!users || users.length === 0) {
+            return res.status(404).json({
+                message: "Aucun utilisateur trouvé"
+            });
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({
+            message: "Erreur serveur",
+            error: error.message
+        });
+    }
 };
 
 exports.getUserById = async (req, res) => {
-  const user = await userService.getUserById(req.params.id);
-  if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' });
-  res.json(user);
+    try {
+        const user = await userService.getUserById(req.params.id);
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
 };
 
 exports.createUser = async (req, res) => {
-  try {
-    const user = await userService.createUser(req.body);
-    res.status(201).json(user);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+    try {
+        const user = await userService.createUser(req.body);
+        res.status(201).json(user);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 };
 
 exports.updateUser = async (req, res) => {
-  const user = await userService.updateUser(req.params.id, req.body);
-  if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' });
-  res.json(user);
+    try {
+        const user = await userService.patchUser(req.params.id, req.body);
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
+};
+
+// Afficher le formulaire pré-rempli
+exports.renderEditForm = async (req, res) => {
+  try {
+    const user = await userService.getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).send('Utilisateur non trouvé');
+    }
+    res.render('editUser', { user });
+  } catch (err) {
+    res.status(500).send('Erreur serveur');
+  }
 };
 
 exports.patchUser = async (req, res) => {
-    const user = await userService.patchUser(req.params.id, req.body);
     try {
+        const user = await userService.patchUser(req.params.id, req.body);
         if (!user)
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.json(user);
@@ -125,10 +157,16 @@ exports.patchUser = async (req, res) => {
 };
 
 exports.deleteUser = async (req, res) => {
-  const user = await userService.deleteUser(req.params.id);
-  if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' });
-  res.status(204).send();
+    try {
+        const user = await userService.deleteUser(req.params.id);
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
 };
+
 ```
 
 ## Définir les routes (Ex : routes/userRoutes.js)
@@ -154,7 +192,6 @@ Le service gère la logique métier (base de données).
 
 ```js
 const userService = require('../services/userService');
-
 const User = require('../models/userModel');
 
 exports.getAllUsers = () => {
