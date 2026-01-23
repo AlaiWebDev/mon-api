@@ -4,6 +4,7 @@
 npm init -y
 npm install express
 npm install mongoose
+npm install nodemon
 ```
 
 exemple-api/  
