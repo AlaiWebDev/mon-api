@@ -16,5 +16,7 @@ router.get('/', async (req, res) => {
 router.get('/:id/edit', userController.renderEditForm);
 
 router.use('/api/users', userRoutes);
+// router.use('/api/catways', catwayRoutes);
+// router.use('/api/reservations', reservationRoutes);
 
 module.exports = router;
