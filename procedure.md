@@ -19,7 +19,7 @@ exemple-api/
 ├── routes/  
 │   └── userRoutes.js  
 ├── views/ - **Si partie FrontEnd**  
-│   └── index.js  
+│   └── index.ejs  
 ├── app.js  
 ├── package.json  
 

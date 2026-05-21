@@ -7,6 +7,9 @@ exports.getAllUsers = () => {
 exports.getUserById = (id) => {
   return User.findById(id);
 };
+exports.getUserByEmail = (mail) => {
+  return User.findOne({email:mail});
+};
 
 exports.createUser = (data) => {
   const user = new User(data);
