@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 // Formulaire d'édition
 router.get('/:id/edit', userController.renderEditForm);
 
-router.use('/api/users', userRoutes);
+// router.use('/api/users', userRoutes);
 // router.use('/api/catways', catwayRoutes);
 // router.use('/api/reservations', reservationRoutes);
 

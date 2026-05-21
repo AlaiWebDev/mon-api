@@ -27,6 +27,16 @@ exports.getUserById = async (req, res) => {
         res.status(500).json({ message: "Erreur serveur", error: err.message });
     }
 };
+exports.getUserByEmail = async (req, res) => {
+    try {
+        const user = await userService.getUserByEmail(req.params.email);
+        if (!user)
+            return res.status(404).json({ message: "Utilisateur introuvable" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur", error: err.message });
+    }
+};
 
 exports.createUser = async (req, res) => {
     try {

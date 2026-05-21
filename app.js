@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const app = express();
+
 const indexRouter = require("./routes/indexRoutes");
 const userRoutes = require('./routes/userRoutes');
 // Déclaration du motreur de template et du dossier des views
@@ -27,9 +28,9 @@ app.use((err, req, res, next) => {
 
 // Exploitation du dossier public pour les fichiers statiques (css, images, etc)
 app.use(express.static('public'));
-
 app.use("/", indexRouter);
-app.use("/users", indexRouter);   // pour les vues frontend
+app.use('/api/users', userRoutes);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Le serveur tourne sur le port ${PORT}`));
