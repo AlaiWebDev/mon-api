@@ -12,6 +12,13 @@ exports.getUserByEmail = (mail) => {
 };
 
 exports.createUser = (data) => {
+  const existingUser = User.findOne({ email: data.email });
+
+  if (existingUser) {
+    const error = new Error("Un utilisateur avec cet email existe déjà");
+    error.statusCode = 409;
+    throw error;
+  }
   const user = new User(data);
   return user.save();
 };
