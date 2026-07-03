@@ -3,7 +3,9 @@ const userService = require("../services/userService");
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await userService.getAllUsers();
+
         if (!users || users.length === 0) {
+        // Ou bien if (users.length === 0)  Si on est certain que le service renvoie toujours un tableau
             return res.status(404).json({
                 message: "Aucun utilisateur trouvé"
             });
@@ -41,9 +43,14 @@ exports.getUserByEmail = async (req, res) => {
 exports.createUser = async (req, res) => {
     try {
         const user = await userService.createUser(req.body);
-        res.status(201).json(user);
+        if (!user)
+            return res.status(400).json({ message: "Les données envoyées sont invalides" });
+        res.status(201).json( {message: "Utilisateur créé avec succès",
+      user,});
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        return res.status(err.statusCode || 500).json({
+      message: err.message || "Erreur lors de la création de l'utilisateur",
+    });
     }
 };
 
