@@ -1,14 +1,14 @@
 const express = require("express");
-const path = require("path");
+// const path = require("path");
 const mongoose = require("mongoose");
 
 const app = express();
 
-const viewsRouter = require("./routes/viewsRoutes/viewsRoutes");
+// const viewsRouter = require("./routes/viewsRoutes/viewsRoutes");
 const apiRouter = require("./routes/apiRoutes/indexRoutes");
 // Déclaration du motreur de template et du dossier des views
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+// app.set("view engine", "ejs");
+// app.set("views", path.join(__dirname, "views"));
 
 // Middlewares globaux
 app.use(express.json());
@@ -25,7 +25,7 @@ mongoose
     .catch((err) => console.error("Erreur MongoDB :", err));
 
 // Routes globales
-app.use("/", viewsRouter);      // Front-end / vues EJS
+// app.use("/", viewsRouter);      // Front-end / vues EJS
 app.use("/api", apiRouter);     // API REST
 
 // Middleware d'erreur simple (optionnel mais recommandé)
