@@ -11,8 +11,10 @@ exports.getUserByEmail = (mail) => {
   return User.findOne({email:mail});
 };
 
-exports.createUser = (data) => {
-  const existingUser = User.findOne({ email: data.email });
+exports.createUser = async (data) => {
+  const existingUser = await User.findOne({ email: data.email });
+  console.log(existingUser);
+  
 
   if (existingUser) {
     const error = new Error("Un utilisateur avec cet email existe déjà");
