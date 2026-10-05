@@ -1,3 +1,8 @@
+require("dotenv").config();
+
+if (!process.env.JWT_SECRET) {
+    throw new Error("La variable JWT_SECRET est manquante");
+}
 const express = require("express");
 // const path = require("path");
 const mongoose = require("mongoose");
