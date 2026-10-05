@@ -26,7 +26,7 @@ exports.getUserById = async (req, res) => {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.json(user);
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: err.message });
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
     }
 };
 exports.getUserByEmail = async (req, res) => {
@@ -36,7 +36,7 @@ exports.getUserByEmail = async (req, res) => {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.json(user);
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: err.message });
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
     }
 };
 
@@ -47,9 +47,9 @@ exports.createUser = async (req, res) => {
             return res.status(400).json({ message: "Les données envoyées sont invalides" });
         res.status(201).json( {message: "Utilisateur créé avec succès",
       user,});
-    } catch (err) {
-        return res.status(err.statusCode || 500).json({
-      message: err.message || "Erreur lors de la création de l'utilisateur",
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+      message: error.message || "Erreur lors de la création de l'utilisateur",
     });
     }
 };
@@ -61,7 +61,7 @@ exports.updateUser = async (req, res) => {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         return res.json(user);
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: err.message });
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
     }
 };
 
@@ -73,7 +73,7 @@ exports.renderEditForm = async (req, res) => {
       return res.status(404).send('Utilisateur non trouvé');
     }
     res.render('editUser', { user });
-  } catch (err) {
+  } catch (error) {
     res.status(500).send('Erreur serveur');
   }
 };
@@ -85,7 +85,7 @@ exports.patchUser = async (req, res) => {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.json(user);
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: err.message });
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
     }
 };
 
@@ -96,6 +96,6 @@ exports.deleteUser = async (req, res) => {
             return res.status(404).json({ message: "Utilisateur introuvable" });
         res.status(204).send();
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: err.message });
+        res.status(500).json({ message: "Erreur serveur", error: error.message });
     }
 };

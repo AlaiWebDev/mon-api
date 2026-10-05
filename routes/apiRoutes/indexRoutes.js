@@ -1,17 +1,20 @@
 const express = require("express");
 const router = express.Router();
 
+const authRoutes = require("./authRoutes");
 const userRoutes = require("./userRoutes");
-// const reservationRoutes = require("./reservationRoutes");
-// const catwayRoutes = require("./catwayRoutes");
+const isAuthenticated = require("../../middlewares/private");
 
-// Toutes les routes liées aux utilisateurs commenceront par /api/users
+// Routes publiques : il faut pouvoir se connecter sans jeton.
+router.use("/auth", authRoutes);
+
+// Toutes les routes déclarées après cette ligne sont privées.
+router.use(isAuthenticated);
+
 router.use("/users", userRoutes);
 
-// Toutes les routes liées aux réservations commenceront par /api/reservations
+// Tes futures routes privées pourront être ajoutées ici.
 // router.use("/reservations", reservationRoutes);
-
-// Toutes les routes liées aux catways commenceront par /api/catways
 // router.use("/catways", catwayRoutes);
 
 module.exports = router;
